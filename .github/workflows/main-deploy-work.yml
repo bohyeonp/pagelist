@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
-        uses: actions/checkout@master
+        uses: actions/checkout@main
 
       - name: Cache node modules  # node modules 캐싱
         uses: actions/cache@v1
@@ -38,4 +38,4 @@ jobs:
           aws s3 cp \
             --recursive \
             --region ap-northeast-2 \
-            /home/runner/work/pagelist/pagelist s3://domfam-pagelist
+            /home/runner/work/pagelist/pagelist/build s3://domfam-pagelist
