@@ -91,7 +91,7 @@ const Login = () => {
                     >
                         <div>
                             <Button style={{width : "100%", marginTop : '10px', marginRight : '10px'}} type="primary" htmlType="submit">
-                                LOGINNNN
+                                LOGIN
                             </Button>
                             <div style={{float : 'right', display : 'flex'}}>
                                 <div onClick={() => dispatch(setModal({show: true, type: 'join'}))} style={{textDecoration: "underline", marginTop : '15px'}}> JOIN</div>
