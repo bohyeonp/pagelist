@@ -26,20 +26,26 @@ const postSlice = createSlice({
         projectData : {
             title : "",
             id : ""
-        }
+        },
+        categoryList : []
     },
     reducers: {
+        setProjectList : (state, action) => {
+            state.projectList = action.payload;
+        },
         setProjectData: (state, action) => {
             state.projectData = action.payload;
         },
-        setProjectList : (state, action) => {
-            state.projectList = action.payload;
-        }
+        setCategoryList : (state, action) => {
+            state.categoryList = action.payload;
+        },
     }
 });
 
-export const {setProjectData, setProjectList} = postSlice.actions;
-export const selectProjectData = state => state.post.projectData;
+export const {setProjectList, setProjectData, setCategoryList} = postSlice.actions;
+
 export const selectProjectList = state => state.post.projectList;
+export const selectProjectData = state => state.post.projectData;
+export const selectCategoryList = state => state.post.categoryList;
 
 export {commonSlice,postSlice};

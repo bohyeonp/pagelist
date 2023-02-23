@@ -55,7 +55,6 @@ export const createProjectApi = (values) => {
 };
 
 export const updateProjectApi = (values) => {
-    console.log(values)
     project.doc(store.getState().post.projectData.id).update({
         ...values
     })
@@ -78,3 +77,20 @@ export const deleteProjectApi = () => {
         console.error("[deleteProjectApi] Error : ", error);
     });
 };
+
+export const createCategoryApi = (values) => {
+    const post = store.getState().post;
+    const categoryList = [...post.categoryList];
+    categoryList.push({...values, page : []})
+    project.doc(post.projectData.id).update({
+        category : categoryList
+    })
+        .then(() => {
+            getProjectApi();
+            store.dispatch(setModal({show: true, type: "create-category-success"}));
+        })
+        .catch((error) => {
+            console.error("[createCategoryApi] Error : ", error);
+        });
+};
+
