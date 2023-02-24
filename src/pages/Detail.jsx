@@ -1,9 +1,15 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {selectProjectList, setModal, setCategoryList, selectCategoryList, selectIsLoggedIn} from "../app/slice";
-import {Tree, Tag} from 'antd';
-import {PlusOutlined, FolderOpenOutlined} from "@ant-design/icons";
+import {
+    selectProjectList,
+    setModal,
+    setCategoryList,
+    selectCategoryList,
+    selectIsLoggedIn,
+    setCategoryData, setProjectData,
+} from "../app/slice";
+import {Tree, Tag, Dropdown} from 'antd';
 
 const { DirectoryTree } = Tree;
 
@@ -13,13 +19,34 @@ const Detail = () => {
     const id = params.projectId;
     const projectList = useSelector(selectProjectList);
     const categoryList = useSelector(selectCategoryList);
+    const categoryData = useSelector(setCategoryData);
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const [treeData, setTreeData] = useState([]);
     const [url, setUrl] = useState("");
 
+    const updateCategory = () => dispatch(setModal({show: true, type: 'category', subType : 'update'}));
+    const deleteCategory = () => dispatch(setModal({show: true, type: 'delete-category'}));
+
+    const items = [
+        {
+            label: '수정',
+            key: '1',
+            onClick : () => {updateCategory()}
+        },
+        {
+            label: '삭제',
+            key: '2',
+            onClick : () => {deleteCategory()}
+        }
+    ];
+    const menuProps = {items};
+
     useEffect(()=> {
         projectList.forEach( val =>{
-            if(val.id === id) dispatch(setCategoryList(val.category));
+            if(val.id === id) {
+                dispatch(setCategoryList(val.category));
+                dispatch(setProjectData({id: val.id, title : val.title}))
+            }
         })
     },[projectList]);
 
@@ -33,10 +60,10 @@ const Detail = () => {
                 y['title'] = <>
                     {!isLoggedIn
                         ? val['title']
-                        : <>
+                        : <div onClick={() => {dispatch(setCategoryData({title : val.title, id : val.id, parentId : val.parentId}))}}>
                             {val['title']}
-                            <PlusOutlined style={{float: 'right', marginTop : '5px', fontSize: '10px'}}/>
-                        </>
+                            <Dropdown.Button menu={menuProps}/>
+                        </div >
                     }
                 </>
                 y['key'] = idx;
@@ -65,9 +92,8 @@ const Detail = () => {
     const onSelect = (keys, info) => {
         if(info.nativeEvent.target.tagName === "IMG"){
             window.open(info.node.url, "_blank")
-        }else if(info.nativeEvent.target.tagName === "svg"){
-            dispatch(setModal({show: true, type: 'page', subType : 'create'}));
         }else if(info.nativeEvent.target.innerHTML === "+ 카테고리 생성") {
+            categoryData.id !== "" && dispatch(setCategoryData({title : "", id : "", parentId : ""}))
             dispatch(setModal({show: true, type: 'category', subType : 'create'}));
         }else {
             info.node.url !== undefined && setUrl(info.node.url)
@@ -76,7 +102,7 @@ const Detail = () => {
 
     return (
          <div style={{display : 'flex'}}>
-            <div style={{width: '25%'}}>
+            <div style={{width: '35%'}}>
                 <DirectoryTree
                     multiple
                     defaultExpandAll

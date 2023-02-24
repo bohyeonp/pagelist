@@ -81,7 +81,8 @@ export const deleteProjectApi = () => {
 export const createCategoryApi = (values) => {
     const post = store.getState().post;
     const categoryList = [...post.categoryList];
-    categoryList.push({...values, page : []})
+    categoryList.push({...values, page : []});
+
     project.doc(post.projectData.id).update({
         category : categoryList
     })
@@ -91,6 +92,42 @@ export const createCategoryApi = (values) => {
         })
         .catch((error) => {
             console.error("[createCategoryApi] Error : ", error);
+        });
+};
+
+export const updateCategoryApi = (values) => {
+    const post = store.getState().post;
+    const categoryList = JSON.parse(JSON.stringify(post.categoryList));
+    categoryList.forEach((val) => {
+        if(val.id === post.categoryData.id) {
+            val.title = values.title;
+            val.updatedDate =  values.updatedDate;
+        }
+    });
+    project.doc(post.categoryData.parentId).update({
+        category : categoryList
+    })
+        .then(() => {
+            getProjectApi();
+            store.dispatch(setModal({show: true, type: "update-category-success"}));
+        })
+        .catch((error) => {
+            console.error("[updateCategoryApi] Error : ", error);
+        });
+};
+
+export const deleteCategoryApi = () => {
+    const post = store.getState().post;
+    const categoryList = JSON.parse(JSON.stringify(post.categoryList));
+    project.doc(post.categoryData.parentId).update({
+        category : categoryList.filter(val => val.id !== post.categoryData.id)
+    })
+        .then(() => {
+            getProjectApi();
+            store.dispatch(setModal({show: true, type: "delete-category-success"}));
+        })
+        .catch((error) => {
+            console.error("[deleteCategoryApi] Error : ", error);
         });
 };
 
